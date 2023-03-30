@@ -10,4 +10,4 @@ def command_logger(usuario: str, comando: str, canal: str):
     Genera un print especial para logs de comandos
     """
     logger(
-        f'El usuario \x1b[5;37;41m{usuario}\x1b[0m ha usado el comando \x1b[5;37;41m{comando}\x1b[0m en el canal \x1b[5;37;41m{canal}\x1b[0m')
+        f'El usuario \x1b[5;37;41m{usuario}\x1b[0m ha usado el comando \x1b[5;37;41m{comando}\x1b[0m en el canal \x1b[5;37;41m#{canal}\x1b[0m')

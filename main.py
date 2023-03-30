@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from utils import logger
+from commandHandler import command_handler
 
 # configuracion para usar archivo '.env'
 import os
@@ -16,14 +17,7 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 @bot.event
 async def on_ready():
     logger(f'Aplicacion funcionando con cliente: {bot.user}')
-
-    # command handler
-    await bot.load_extension("slashCommands.warnotifs")
-    try:
-        synced = await bot.tree.sync()
-        logger(f"Se han sincronizado {len(synced)} comandos.")
-    except Exception as e:
-        print(e)
+    await command_handler(bot)
 
 
 bot.run(os.environ.get('TOKEN'))
