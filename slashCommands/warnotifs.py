@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+from utils import command_logger
 
 
 class Warnotifs(commands.Cog):
@@ -9,7 +10,8 @@ class Warnotifs(commands.Cog):
 
     @app_commands.command(name="fijarcanal", description="Fija el canal en el que se ejecuta el comando para enviar las notificaciones de guerra.")
     async def fijarcanal(self, interaction: discord.Interaction):
-        await interaction.response.send_message(f"{interaction.channel.name} se ha definido para enviar notificaciones de guerra.")
+        await interaction.response.send_message(f"Este canal ahora recibira notificaciones de guerra!.")
+        command_logger(interaction.user, '/fijarcanal', interaction.channel)
 
 
 async def setup(bot: commands.Bot):
