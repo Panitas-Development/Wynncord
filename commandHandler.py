@@ -20,3 +20,6 @@ async def command_handler(bot: commands.Bot):
         logger(f"Se han sincronizado {len(synced)} comandos.")
     except Exception as e:
         print(e)
+
+if __name__ == '__main__':
+    print(get_command_modules())

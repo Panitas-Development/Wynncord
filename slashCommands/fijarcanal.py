@@ -11,8 +11,9 @@ class Fijarcanal(commands.Cog):
     #TODO obtener canal para fijar las notificaciones.
     @app_commands.command(name="fijarcanal", description="Fija el canal en el que se ejecuta el comando para enviar las notificaciones de guerra.")
     async def fijarcanal(self, interaction: discord.Interaction):
-        await interaction.response.send_message(f"Este canal ahora recibira notificaciones de guerra!")
         command_logger(interaction.user, '/fijarcanal', interaction.channel)
+        await interaction.response.send_message(f"Este canal ahora recibira notificaciones de guerra!")
+
 
 
 async def setup(bot: commands.Bot):
