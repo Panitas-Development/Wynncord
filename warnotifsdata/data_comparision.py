@@ -1,8 +1,16 @@
 import discord
+from discord.ext import commands
 from datetime import datetime
 from territories import get_territories
 from territories.get_territories import Territory, Location
 
+tracked_guilds = []
+track_channel = None
+old_data = []
+
+def set_traked_channel(id: int):
+    global track_channel
+    track_channel = id
 
 def get_coordinates(location: Location):
     coordinateX = (location.startX + location.endX) / 2
@@ -51,12 +59,10 @@ def embed_territorio(new_territory: Territory, old_territory: Territory, perdida
     return embed
 
 
-tracked_guilds = []
-track_channel = ""
-old_data = []
 
+def data_comparision(bot: commands.Bot):
+    if track_channel == None or tracked_guilds == None: return
 
-def data_comparision():
     new_data_comp = []
     old_data_comp = []
 
@@ -75,7 +81,9 @@ def data_comparision():
 
     for i in range(len(new_data_comp)):
         if new_data_comp[i].guild in tracked_guilds:
-            embed_territorio(new_data_comp[i], old_data_comp[i], perdida=False)
+            embed = embed_territorio(new_data_comp[i], old_data_comp[i], perdida=False)
+            bot.get_channel(track_channel).send(embed=embed)
 
         if old_data_comp[i].guild in tracked_guilds:
-            embed_territorio(new_data_comp[i], old_data_comp[i], perdida=True)
+            embed = embed_territorio(new_data_comp[i], old_data_comp[i], perdida=True)
+            bot.get_channel(track_channel).send(embed=embed)

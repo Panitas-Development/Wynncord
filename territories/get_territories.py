@@ -16,7 +16,7 @@ class Territory:
         self.territory = territory
         self.guild = guild
         self.guildPrefix = guildPrefix
-        self.acquired = datetime.strptime(acquired, '%d-%m-%d %H:%M:%S')
+        self.acquired = datetime.strptime(acquired, '%Y-%m-%d %H:%M:%S')
         self.location = Location(**location)
 
 
