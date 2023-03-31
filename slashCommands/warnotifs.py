@@ -3,9 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 from utils import command_logger
 from guilds import get_guild
-
-tracked_guilds = []
-track_channel = ""
+from warnotifsdata.data_comparision import tracked_guilds, track_channel
 
 
 class Warnotifs(app_commands.Group):
@@ -31,15 +29,13 @@ class Warnotifs(app_commands.Group):
         else:
             await interaction.response.send_message(f'La guild "{guild}" no se encuentra en la lista de trackeos.')
 
-    # TODO obtener canal para fijar las notificaciones.
     @app_commands.command(name="fijarcanal",
                           description="Fija el canal en el que se ejecuta el comando para enviar las notificaciones de guerra.")
     async def fijarcanal(self, interaction: discord.Interaction):
         command_logger(interaction.user, '/fijarcanal', interaction.channel)
-        global track_channel
         track_channel = interaction.channel
         await interaction.response.send_message(f"Este canal ahora recibira notificaciones de guerra!", ephemeral=True)
 
 
 async def setup(bot: commands.Bot):
-    bot.tree.add_command(Warnotifs(name="warnotifs", description="Añade notificaciones de conquistas de territorios."))
+    bot.tree.add_command(Warnotifs(name="warnotifsdata", description="Añade notificaciones de conquistas de territorios."))
