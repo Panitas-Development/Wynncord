@@ -5,7 +5,7 @@ from territories import get_territories
 from territories.get_territories import Territory, Location
 
 tracked_guilds = []
-track_channel = None
+track_channel = 0
 old_data = []
 
 
@@ -40,11 +40,11 @@ def get_time_captured(newdate: datetime, olddate: datetime):
     return result
 
 
-def embed_territory(new_territory: Territory, old_territory: Territory, loss: bool):
-    coordinateX, coordinateY = get_coordinates(new_territory.location)
+def embed_territory(new_territory: Territory, old_territory: Territory, loss=False):
+    coordinateX, coordinateY = get_web_coordinates(new_territory.location)
 
     color = 0x0fb31a
-    if loss: 
+    if loss:
         color = 0xf21c1c
 
     embed = discord.Embed(title=f"Captured by: {new_territory.guild}",
@@ -62,23 +62,19 @@ def embed_territory(new_territory: Territory, old_territory: Territory, loss: bo
     return embed
 
 
-
 async def data_comparision(bot: commands.Bot):
     if track_channel is None:
         return
 
     global old_data
     data = get_territories()
-    if len(old_data) == 0: old_data = data
+    if not old_data:
+        old_data = {t.territory: t for t in data}
 
     for territory in data:
-        for old_territory in old_data:
-            if territory.territory == old_territory.territory and territory.guild != old_territory.guild:
-                if territory.guild in tracked_guilds or old_territory.guild in tracked_guilds:
-                    if territory.guild in tracked_guilds:
-                        lost = False
-                    elif old_territory.guild in tracked_guilds:
-                        lost = True
-                    await bot.get_channel(track_channel).send(embed=embed_territory(territory, old_territory, lost))
-
-    old_data = data
+        old_territory = old_data.get(territory.territory)
+        if old_territory and territory.guild != old_territory.guild:
+            if territory.guild in tracked_guilds or old_territory.guild in tracked_guilds:
+                lost = territory.guild not in tracked_guilds
+                await bot.get_channel(track_channel).send(embed=embed_territory(territory, old_territory, lost))
+            old_data[territory.territory] = territory
