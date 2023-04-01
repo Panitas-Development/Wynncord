@@ -3,7 +3,7 @@ from discord.ext import commands
 from datetime import datetime
 from territories import get_territories
 from territories.get_territories import Territory, Location
-from warnotifsdata.json_data import create_json, check_tracking, get_channels
+from warnotifsdata.json_data import create_json, check_tracking, get_channels, rm_tracking
 
 old_data = []
 
@@ -79,6 +79,9 @@ async def data_comparision(bot: commands.Bot):
                     lost = True
 
                 for channel_id in get_channels(territory.guild):
-                    await bot.get_channel(channel_id).send(embed=embed_territory(territory, old_territory, lost))
+                    try:
+                        await bot.get_channel(channel_id).send(embed=embed_territory(territory, old_territory, lost))
+                    except:
+                        rm_tracking(territory.guild, channel_id)
 
             old_data[territory.territory] = territory
