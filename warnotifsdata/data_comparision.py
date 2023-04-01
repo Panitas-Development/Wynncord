@@ -3,11 +3,9 @@ from discord.ext import commands
 from datetime import datetime
 from territories import get_territories
 from territories.get_territories import Territory, Location
+from warnotifsdata.json_data import create_json, check_tracking, get_channels
 
-tracked_guilds = []
-track_channel = 0
 old_data = []
-
 
 def set_traked_channel(id: int):
     global track_channel
@@ -63,8 +61,7 @@ def embed_territory(new_territory: Territory, old_territory: Territory, loss=Fal
 
 
 async def data_comparision(bot: commands.Bot):
-    if track_channel is None:
-        return
+    create_json()
 
     global old_data
     data = get_territories()
@@ -74,7 +71,14 @@ async def data_comparision(bot: commands.Bot):
     for territory in data:
         old_territory = old_data.get(territory.territory)
         if old_territory and territory.guild != old_territory.guild:
-            if territory.guild in tracked_guilds or old_territory.guild in tracked_guilds:
-                lost = territory.guild not in tracked_guilds
-                await bot.get_channel(track_channel).send(embed=embed_territory(territory, old_territory, lost))
+
+            territory_tracked = check_tracking(territory.guild)
+            if territory_tracked or check_tracking(old_territory.guild):
+                lost = False
+                if not territory_tracked:
+                    lost = True
+
+                for channel_id in get_channels(territory.guild):
+                    await bot.get_channel(channel_id).send(embed=embed_territory(territory, old_territory, lost))
+
             old_data[territory.territory] = territory

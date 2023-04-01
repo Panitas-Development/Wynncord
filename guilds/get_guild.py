@@ -17,7 +17,7 @@ class Member:
 
 class Guild:
     def __init__(self, name: str, prefix: str, members: List[dict], xp: int, level: int, created: datetime,
-                 createdFriendly: str, territories: int, banner: dict, request: dict):
+                 createdFriendly: str, territories: int, request: dict ,banner: dict = {}):
         self.name = name
         self.prefix = prefix
         self.members = [Member(**member) for member in members]
@@ -31,7 +31,7 @@ class Guild:
 
 
 def get_guild(name: str):
-    request = requests.get(f'https://api.wynncraft.com/public_api.php?action=guildStats&command={name}').json()
+    request = requests.get(f"https://api.wynncraft.com/public_api.php?action=guildStats&command={name.replace(' ', '%20')}").json()
     logger("'Function 'get_guild' successfully called the API!.")
     try:
         return Guild(**request)
