@@ -7,7 +7,6 @@ from warnotifsdata.data_comparision import tracked_guilds, set_traked_channel
 
 
 class Warnotifs(app_commands.Group):
-
     @app_commands.command(name='track_guild', description="Añade nueva guild a la lista de trackeo para notificaciones")
     @app_commands.describe(guild="Nombre de guild a trackear")
     async def track_guild(self, interaction: discord.Interaction, guild: str):

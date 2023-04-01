@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands, tasks
+
 from utils import logger
 from commandHandler import command_handler
 from warnotifsdata.data_comparision import data_comparision
@@ -23,9 +24,9 @@ async def on_ready():
     await command_handler(bot)
 
 
-@tasks.loop(minutes=10)
+@tasks.loop(seconds=30)
 async def warnotif():
-    data_comparision(bot)
+    await data_comparision(bot)
 
 
 bot.run(os.environ.get('TOKEN'))

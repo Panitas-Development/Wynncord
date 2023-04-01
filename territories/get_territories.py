@@ -1,6 +1,7 @@
 import requests as requests
 from utils import logger
 from datetime import datetime
+from dateutil import tz
 
 
 class Location:
@@ -10,14 +11,28 @@ class Location:
         self.endX = endX
         self.endY = endY
 
+    def __str__(self):
+        return f"({self.startX}, {self.startY}) - ({self.endX}, {self.endY})"
+
 
 class Territory:
     def __init__(self, territory: str, guild: str, guildPrefix: str, acquired: str, location: dict):
         self.territory = territory
         self.guild = guild
         self.guildPrefix = guildPrefix
-        self.acquired = datetime.strptime(acquired, '%Y-%m-%d %H:%M:%S')
+        self.acquired = convert_datetime(datetime.strptime(acquired, '%Y-%m-%d %H:%M:%S'))
         self.location = Location(**location)
+
+    def __str__(self):
+        return f"{self.territory} ({self.guildPrefix} {self.guild}) acquired on {self.acquired} at {self.location}"
+
+
+def convert_datetime(utc):
+    from_zone = tz.tzutc()
+    to_zone = tz.tzlocal()
+    utc = utc.replace(tzinfo=from_zone)
+
+    return utc.astimezone(to_zone)
 
 
 def get_territories():
@@ -31,9 +46,3 @@ def get_territories():
     data = [Territory(**territories[name]) for name in territories]
     logger("Funcion 'get_territories' ha llamado a la api con exito!.")
     return data
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    for territory in get_territories():
-        print(territory.guild)

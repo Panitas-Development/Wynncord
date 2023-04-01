@@ -8,9 +8,11 @@ tracked_guilds = []
 track_channel = None
 old_data = []
 
+
 def set_traked_channel(id: int):
     global track_channel
     track_channel = id
+
 
 def get_coordinates(location: Location):
     coordinateX = (location.startX + location.endX) / 2
@@ -44,12 +46,12 @@ def embed_territorio(new_territory: Territory, old_territory: Territory, perdida
     color = 0x0fb31a
     if perdida: color = 0xf21c1c
 
-    embed = discord.Embed(title=f"Capturado por: {new_territory.guild}", url="https://www.instagram.com/p/CpoUOnDtlWB/",
+    embed = discord.Embed(title=f"Capturado por: {new_territory.guild}",
+                          url=f"https://www.wynncraft.com/stats/guild/{new_territory.guild.replace(' ', '%20')}",
                           color=color)
-    embed.set_author(name="Temple of Legends",
+    embed.set_author(name=f'{new_territory.territory}',
                      url=f"https://map.wynncraft.com/#/{coordinateX}/64/{coordinateY}/-1/wynn-main/Wynncraft")
     embed.set_thumbnail(url="https://cdn.wynncraft.com/nextgen/wynncraft_icon.png")
-    embed.add_field(name=".", value=".", inline=False)
     embed.add_field(name="Capturado hace:", value=discord.utils.format_dt(new_territory.acquired, style='R'),
                     inline=False)
     embed.add_field(name="Antiguo dueño:", value=old_territory.guild, inline=True)
@@ -59,31 +61,24 @@ def embed_territorio(new_territory: Territory, old_territory: Territory, perdida
     return embed
 
 
-
-def data_comparision(bot: commands.Bot):
-    if track_channel == None or tracked_guilds == None: return
-
-    new_data_comp = []
-    old_data_comp = []
+async def data_comparision(bot: commands.Bot):
+    if track_channel is None:
+        return
 
     global old_data
     data = get_territories()
-
     if len(old_data) == 0: old_data = data
-    if data == old_data: return
 
     for territory in data:
         for old_territory in old_data:
-            if territory.guild != old_territory.guild:
+            # Si el territorio es del mismo nombre y no tiene la misma guild
+            if territory.territory == old_territory.territory and territory.guild != old_territory.guild:
+                # si la guild del antiguo o nuevo territorio esta en los trackeos
                 if territory.guild in tracked_guilds or old_territory.guild in tracked_guilds:
-                    new_data_comp.append(territory)
-                    old_data_comp.append(old_territory)
+                    if territory.guild in tracked_guilds:
+                        lost = False
+                    elif old_territory in tracked_guilds:
+                        lost = True
+                    await bot.get_channel(track_channel).send(embed=embed_territorio(territory, old_territory, lost))
 
-    for i in range(len(new_data_comp)):
-        if new_data_comp[i].guild in tracked_guilds:
-            embed = embed_territorio(new_data_comp[i], old_data_comp[i], perdida=False)
-            bot.get_channel(track_channel).send(embed=embed)
-
-        if old_data_comp[i].guild in tracked_guilds:
-            embed = embed_territorio(new_data_comp[i], old_data_comp[i], perdida=True)
-            bot.get_channel(track_channel).send(embed=embed)
+    old_data = data
