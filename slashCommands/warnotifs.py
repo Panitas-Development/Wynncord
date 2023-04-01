@@ -7,34 +7,35 @@ from warnotifsdata.data_comparision import tracked_guilds, set_traked_channel
 
 
 class Warnotifs(app_commands.Group):
-    @app_commands.command(name='track_guild', description="Añade nueva guild a la lista de trackeo para notificaciones")
-    @app_commands.describe(guild="Nombre de guild a trackear")
+    @app_commands.command(name='track_guild', description="Adds a new guild to the tracking list for notifications.")
+    @app_commands.describe(guild="Name of the guild to be tracked.")
     async def track_guild(self, interaction: discord.Interaction, guild: str):
         command_logger(interaction.user, '/track_guild', interaction.channel)
         data = get_guild(guild)
         if not data:
-            await interaction.response.send_message(f'No se ha encontrado la guild "{guild}".')
+            await interaction.response.send_message(f'Guild "{guild}" not found.')
         else:
             tracked_guilds.append(data.name)
-            await interaction.response.send_message(f'Se ha trackeado la guild "{data.name}" con exito!.')
+            await interaction.response.send_message(f'Guild "{data.name}" has been successfully added to the tracking list.')
 
-    @app_commands.command(name='untrack_guild', description="Quita la guild de la lista de trackeos.")
-    @app_commands.describe(guild="Nombre de guild a quitar")
+    @app_commands.command(name='untrack_guild', description="Removes a guild from the tracking list.")
+    @app_commands.describe(guild="Name of the guild to be removed.")
     async def untrack_guild(self, interaction: discord.Interaction, guild: str):
         command_logger(interaction.user, '/untrack_guild', interaction.channel)
         if guild in tracked_guilds:
             tracked_guilds.remove(guild)
-            await interaction.response.send_message(f'"{guild}" se ha removido con exito!.')
+            await interaction.response.send_message(f'Guild "{guild}" has been successfully removed.')
         else:
-            await interaction.response.send_message(f'La guild "{guild}" no se encuentra en la lista de trackeos.')
+            await interaction.response.send_message(f'Guild "{guild}" is not in the tracking list.')
 
-    @app_commands.command(name="fijarcanal",
-                          description="Fija el canal en el que se ejecuta el comando para enviar las notificaciones de guerra.")
-    async def fijarcanal(self, interaction: discord.Interaction):
-        command_logger(interaction.user, '/fijarcanal', interaction.channel)
+    @app_commands.command(name="set_channel",
+                          description="Sets the channel in which to send war notifications.")
+    async def set_channel(self, interaction: discord.Interaction):
+        command_logger(interaction.user, '/set_channel', interaction.channel)
         set_traked_channel(interaction.channel_id)
-        await interaction.response.send_message(f"Este canal ahora recibira notificaciones de guerra!", ephemeral=True)
+        await interaction.response.send_message(f"This channel will now receive war notifications!", ephemeral=True)
 
 
 async def setup(bot: commands.Bot):
-    bot.tree.add_command(Warnotifs(name="warnotifs", description="Añade notificaciones de conquistas de territorios."))
+    bot.tree.add_command(Warnotifs(
+        name="warnotifs", description="Adds notifications of territory conquests."))

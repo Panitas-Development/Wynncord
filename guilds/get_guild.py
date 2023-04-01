@@ -32,7 +32,7 @@ class Guild:
 
 def get_guild(name: str):
     request = requests.get(f'https://api.wynncraft.com/public_api.php?action=guildStats&command={name}').json()
-    logger("'get_guild' ha llamado a la api.")
+    logger("'Function 'get_guild' successfully called the API!.")
     try:
         return Guild(**request)
     except:

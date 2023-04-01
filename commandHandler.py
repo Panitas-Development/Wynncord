@@ -17,7 +17,7 @@ async def command_handler(bot: commands.Bot):
         await bot.load_extension(f"slashCommands.{command}")
     try:
         synced = await bot.tree.sync()
-        logger(f"Se han sincronizado {len(synced)} archivos de comandos.")
+        logger(f"{len(synced)} command files have been synchronized.")
     except Exception as e:
         print(e)
 

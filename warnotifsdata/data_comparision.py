@@ -23,42 +23,44 @@ def get_coordinates(location: Location):
 
 def get_time_captured(newdate: datetime, olddate: datetime):
     time_captured = newdate - olddate
-    # Convertimos la diferencia de tiempo a días, horas, minutos y segundos
-    dias = time_captured.days
-    horas, segundos = divmod(time_captured.seconds, 3600)
-    minutos, segundos = divmod(segundos, 60)
+    # Convert the time difference into days, hours, minutes, and seconds
+    days = time_captured.days
+    hours, seconds = divmod(time_captured.seconds, 3600)
+    minutes, seconds = divmod(seconds, 60)
 
-    # Creamos una lista con los componentes que queremos incluir en el resultado final
-    componentes = [("días", dias), ("horas", horas), ("minutos", minutos), ("segundos", segundos)]
+    # Create a list with the components we want to include in the final result
+    components = [("days", days), ("hours", hours), ("minutes", minutes), ("seconds", seconds)]
 
-    # Creamos una lista con los componentes que tienen un valor distinto de cero
-    componentes_no_cero = [f"{valor} {nombre}" for nombre, valor in componentes if valor != 0]
+    # Create a list with the components that have a non-zero value
+    non_zero_components = [f"{value} {name}" for name, value in components if value != 0]
 
-    # Imprimimos el resultado en formato "días:horas:minutos:segundos"
-    resultado = " ".join(componentes_no_cero)
+    # Print the result in the format "days:hours:minutes:seconds"
+    result = " ".join(non_zero_components)
 
-    return resultado
+    return result
 
 
-def embed_territorio(new_territory: Territory, old_territory: Territory, perdida: bool):
+def embed_territory(new_territory: Territory, old_territory: Territory, loss: bool):
     coordinateX, coordinateY = get_coordinates(new_territory.location)
 
     color = 0x0fb31a
-    if perdida: color = 0xf21c1c
+    if loss: 
+        color = 0xf21c1c
 
-    embed = discord.Embed(title=f"Capturado por: {new_territory.guild}",
+    embed = discord.Embed(title=f"Captured by: {new_territory.guild}",
                           url=f"https://www.wynncraft.com/stats/guild/{new_territory.guild.replace(' ', '%20')}",
                           color=color)
     embed.set_author(name=f'{new_territory.territory}',
                      url=f"https://map.wynncraft.com/#/{coordinateX}/64/{coordinateY}/-1/wynn-main/Wynncraft")
     embed.set_thumbnail(url="https://cdn.wynncraft.com/nextgen/wynncraft_icon.png")
-    embed.add_field(name="Capturado hace:", value=discord.utils.format_dt(new_territory.acquired, style='R'),
+    embed.add_field(name="Captured at:", value=discord.utils.format_dt(new_territory.acquired, style='R'),
                     inline=False)
-    embed.add_field(name="Antiguo dueño:", value=old_territory.guild, inline=True)
-    embed.add_field(name="Tiempo capturado:", value=get_time_captured(new_territory.acquired, old_territory.acquired),
+    embed.add_field(name="Former owner:", value=old_territory.guild, inline=True)
+    embed.add_field(name="Time captured:", value=get_time_captured(new_territory.acquired, old_territory.acquired),
                     inline=True)
 
     return embed
+
 
 
 async def data_comparision(bot: commands.Bot):
@@ -71,14 +73,12 @@ async def data_comparision(bot: commands.Bot):
 
     for territory in data:
         for old_territory in old_data:
-            # Si el territorio es del mismo nombre y no tiene la misma guild
             if territory.territory == old_territory.territory and territory.guild != old_territory.guild:
-                # si la guild del antiguo o nuevo territorio esta en los trackeos
                 if territory.guild in tracked_guilds or old_territory.guild in tracked_guilds:
                     if territory.guild in tracked_guilds:
                         lost = False
-                    elif old_territory in tracked_guilds:
+                    elif old_territory.guild in tracked_guilds:
                         lost = True
-                    await bot.get_channel(track_channel).send(embed=embed_territorio(territory, old_territory, lost))
+                    await bot.get_channel(track_channel).send(embed=embed_territory(territory, old_territory, lost))
 
     old_data = data

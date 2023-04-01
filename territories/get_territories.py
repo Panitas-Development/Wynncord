@@ -35,14 +35,16 @@ def convert_datetime(utc):
     return utc.astimezone(to_zone)
 
 
+
 def get_territories():
     """
-    Obtiene todos los territorios desde la api de Wynncraft.
-    Retorna una lista de objetos con estos.
+    Obtains all the territories from the Wynncraft API.
+    Returns a list of objects with these territories.
     """
     request = requests.get(
-        'https://api.wynncraft.com/public_api.php?action=territoryList').json()
+    'https://api.wynncraft.com/public_api.php?action=territoryList').json()
     territories = request['territories']
     data = [Territory(**territories[name]) for name in territories]
-    logger("Funcion 'get_territories' ha llamado a la api con exito!.")
+    logger("Function 'get_territories' successfully called the API!.")
+    
     return data
