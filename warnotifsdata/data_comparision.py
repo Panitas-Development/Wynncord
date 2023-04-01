@@ -14,7 +14,7 @@ def set_traked_channel(id: int):
     track_channel = id
 
 
-def get_coordinates(location: Location):
+def get_web_coordinates(location: Location):
     coordinateX = (location.startX + location.endX) / 2
     coordinateY = (location.startY + location.endY) / 2
 
