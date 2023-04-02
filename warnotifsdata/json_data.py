@@ -1,7 +1,7 @@
 import json
 from os import path
 
-JSON_NAME = 'guild_tracking_data.json'
+JSON_NAME = '/savedData/guild_tracking_data.json'
 
 def create_json():
     if not path.isfile(JSON_NAME):
