@@ -74,11 +74,15 @@ async def data_comparision(bot: commands.Bot):
 
             territory_tracked = check_tracking(territory.guild)
             if territory_tracked or check_tracking(old_territory.guild):
-                lost = False
+
                 if not territory_tracked:
                     lost = True
+                    channels = get_channels(old_territory.guild)
+                else:
+                    lost = False
+                    channels = get_channels(territory.guild)
 
-                for channel_id in get_channels(territory.guild):
+                for channel_id in channels:
                     try:
                         await bot.get_channel(channel_id).send(embed=embed_territory(territory, old_territory, lost))
                     except:
